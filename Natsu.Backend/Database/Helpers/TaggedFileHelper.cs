@@ -14,4 +14,6 @@ public static class TaggedFileHelper
 
     public static TaggedFile? Get(string id) => !ObjectId.TryParse(id, out var obj) ? null : Get(obj);
     public static TaggedFile? Get(ObjectId id) => collection.Find(x => x.ID == id).FirstOrDefault();
+
+    public static TaggedFile? GetByPath(string id) => collection.Find(x => x.FilePath == id).FirstOrDefault();
 }

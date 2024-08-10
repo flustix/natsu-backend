@@ -31,7 +31,7 @@ public class UploadRoute : INatsuAPIRoute
         }
 
         var folder = payload.Folder ?? "";
-        var path = Path.Combine(folder, payload.Name).Replace("\\", "/");
+        var path = Path.Combine(folder, payload.Name).Replace("\\", "/").ToLowerInvariant();
 
         if (!path.StartsWith('/'))
             path = '/' + path;
@@ -53,13 +53,14 @@ public class UploadRoute : INatsuAPIRoute
 
         var taggedFile = FileManager.CreateFile(path, bytes, file =>
         {
+            file.NotSafeForWork = payload.NotSafeForWork ?? false;
             file.Description = payload.Description ?? "";
         });
 
         await interaction.Reply(HttpStatusCode.Created, taggedFile);
     }
 
-    private class Payload
+    public class Payload
     {
         [JsonProperty("content")]
         public string? Content { get; set; }
@@ -72,5 +73,8 @@ public class UploadRoute : INatsuAPIRoute
 
         [JsonProperty("folder")]
         public string? Folder { get; set; }
+
+        [JsonProperty("nsfw")]
+        public bool? NotSafeForWork { get; set; }
     }
 }

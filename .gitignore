@@ -1,0 +1,7 @@
+bin
+obj
+files/
+.idea
+logs/
+config.json
+Natsu.Backend.sln.DotSettings.user

@@ -15,7 +15,7 @@ public class PreviewManager
         try
         {
             var mime = file.MimeType;
-            Logger.Log($"creating preview for {file.FilePath} ({mime})", LoggingTarget.General, LogLevel.Debug);
+            // Logger.Log($"creating preview for {file.FilePath} ({mime})", LoggingTarget.General, LogLevel.Debug);
 
             if (FileUtils.IsImage(mime))
                 return createImagePreview(content);
@@ -62,7 +62,7 @@ public class PreviewManager
 
     private static string createImagePreview(byte[] content)
     {
-        Logger.Log("creating image preview", LoggingTarget.General, LogLevel.Debug);
+        // Logger.Log("creating image preview", LoggingTarget.General, LogLevel.Debug);
         using var original = Image.Load<Rgba32>(content);
         var smallest = Math.Min(original.Width, original.Height);
 

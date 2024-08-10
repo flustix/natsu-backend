@@ -56,6 +56,7 @@ public class UploadRoute : INatsuAPIRoute
 
         var taggedFile = FileManager.CreateFile(path, bytes, file =>
         {
+            file.Created = file.Modified = payload.CreationDate ?? DateTimeOffset.Now.ToUnixTimeSeconds();
             file.NotSafeForWork = payload.NotSafeForWork ?? false;
             file.Description = payload.Description ?? "";
         });
@@ -79,5 +80,8 @@ public class UploadRoute : INatsuAPIRoute
 
         [JsonProperty("nsfw")]
         public bool? NotSafeForWork { get; set; }
+
+        [JsonProperty("created")]
+        public long? CreationDate { get; set; }
     }
 }

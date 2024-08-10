@@ -1,5 +1,4 @@
-﻿using Midori.Logging;
-using Natsu.Backend.Database.Helpers;
+﻿using Natsu.Backend.Database.Helpers;
 using Natsu.Backend.Models;
 using Natsu.Backend.Utils;
 
@@ -18,9 +17,7 @@ public static class FileManager
         {
             FilePath = path,
             Hash = hash,
-            Size = content.Length,
-            Created = DateTime.UtcNow,
-            Modified = DateTime.UtcNow
+            Size = content.Length
         };
 
         file.PreviewHash = PreviewManager.CreatePreview(file, content);
@@ -28,7 +25,7 @@ public static class FileManager
         applyData?.Invoke(file);
 
         TaggedFileHelper.Add(file);
-        Logger.Log($"File '{path}' created with hash '{hash}'!", LoggingTarget.General, LogLevel.Debug);
+        // Logger.Log($"File '{path}' created with hash '{hash}'!", LoggingTarget.General, LogLevel.Debug);
 
         return file;
     }
@@ -41,7 +38,7 @@ public static class FileManager
 
     private static void writeFile(string hash, Stream content)
     {
-        Logger.Log($"Writing file with hash '{hash}'...", LoggingTarget.General, LogLevel.Debug);
+        // Logger.Log($"Writing file with hash '{hash}'...", LoggingTarget.General, LogLevel.Debug);
 
         var path = GetPathFor(hash);
         var folder = Path.GetDirectoryName(path)!;
@@ -53,7 +50,7 @@ public static class FileManager
         content.Position = 0;
         content.CopyTo(stream);
 
-        Logger.Log($"{content.Length} bytes written!", LoggingTarget.General, LogLevel.Debug);
+        // Logger.Log($"{content.Length} bytes written!", LoggingTarget.General, LogLevel.Debug);
     }
 
     public static string GetPathFor(string hash) => Path.Combine(folderPath, HashToPath(hash));

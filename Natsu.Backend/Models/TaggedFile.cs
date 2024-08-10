@@ -53,11 +53,11 @@ public class TaggedFile
 
     [BsonElement("created")]
     [JsonProperty("created")]
-    public DateTime Created { get; set; } = DateTime.UtcNow;
+    public long Created { get; set; } = DateTimeOffset.Now.ToUnixTimeSeconds();
 
     [BsonElement("modified")]
     [JsonProperty("modified")]
-    public DateTime Modified { get; set; } = DateTime.UtcNow;
+    public long Modified { get; set; } = DateTimeOffset.Now.ToUnixTimeSeconds();
 
     [BsonElement("size")]
     [JsonProperty("size")]

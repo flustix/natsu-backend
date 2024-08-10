@@ -45,6 +45,7 @@ public class PreviewRoute : INatsuAPIRoute
         }
 
         var bytes = await File.ReadAllBytesAsync(path);
+        interaction.Response.ContentType = file.MimeType;
         await interaction.ReplyData(bytes);
     }
 }

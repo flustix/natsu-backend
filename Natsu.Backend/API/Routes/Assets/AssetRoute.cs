@@ -31,6 +31,7 @@ public class AssetRoute : INatsuAPIRoute
         }
 
         var bytes = await File.ReadAllBytesAsync(path);
+        interaction.Response.ContentType = file.MimeType;
         await interaction.ReplyData(bytes);
     }
 }

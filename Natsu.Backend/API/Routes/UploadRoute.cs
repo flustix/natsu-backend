@@ -33,6 +33,9 @@ public class UploadRoute : INatsuAPIRoute
         var folder = payload.Folder ?? "";
         var path = Path.Combine(folder, payload.Name).Replace("\\", "/").ToLowerInvariant();
 
+        while (path.Contains("//"))
+            path = path.Replace("//", "/");
+
         if (!path.StartsWith('/'))
             path = '/' + path;
 

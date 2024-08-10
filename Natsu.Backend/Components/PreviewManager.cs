@@ -46,7 +46,7 @@ public class PreviewManager
             {
                 FileName = Program.Config.FfmpegPath,
                 Arguments = $"-y -i \"{videoPath}\" -vf \"select=eq(n\\,0)\" -q:v 3 \"{imagePath}\"",
-                // CreateNoWindow = true,
+                CreateNoWindow = true,
                 // RedirectStandardOutput = true,
                 // RedirectStandardError = true,
                 UseShellExecute = false,

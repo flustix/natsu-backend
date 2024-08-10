@@ -17,6 +17,10 @@ public class TaggedFile
     public string FilePath { get; set; } = string.Empty;
 
     [BsonIgnore]
+    [JsonProperty("directory")]
+    public string Directory => Path.GetDirectoryName(FilePath)?.Replace('\\', '/') ?? "/";
+
+    [BsonIgnore]
     [JsonProperty("name")]
     public string FileName => Path.GetFileName(FilePath);
 
@@ -38,6 +42,10 @@ public class TaggedFile
     [BsonElement("description")]
     [JsonProperty("description")]
     public string Description { get; set; } = string.Empty;
+
+    [BsonElement("nsfw")]
+    [JsonProperty("nsfw")]
+    public bool NotSafeForWork { get; set; }
 
     [BsonElement("tags")]
     [JsonProperty("tags")]

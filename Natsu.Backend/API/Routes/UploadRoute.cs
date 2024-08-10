@@ -40,6 +40,9 @@ public class UploadRoute : INatsuAPIRoute
 
         try
         {
+            if (payload.Content.Contains(','))
+                payload.Content = payload.Content.Split(",")[1];
+
             bytes = Convert.FromBase64String(payload.Content);
         }
         catch (Exception ex)

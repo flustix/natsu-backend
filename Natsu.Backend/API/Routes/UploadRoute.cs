@@ -18,20 +18,28 @@ public class UploadRoute : INatsuAPIRoute
             return;
         }
 
+        var valid = true;
+
         if (string.IsNullOrEmpty(payload.Content))
         {
-            await interaction.ReplyError(HttpStatusCode.BadRequest, "Missing 'content' field.");
-            return;
+            interaction.AddError("content", "Content can not be empty.");
+            valid = false;
         }
 
-        if (string.IsNullOrEmpty(payload.Name))
+        if (string.IsNullOrWhiteSpace(payload.Name))
         {
-            await interaction.ReplyError(HttpStatusCode.BadRequest, "Missing 'name' field.");
+            interaction.AddError("name", "Filename can not be empty.");
+            valid = false;
+        }
+
+        if (!valid)
+        {
+            await interaction.ReplyError(HttpStatusCode.BadRequest, "Invalid form.");
             return;
         }
 
         var folder = payload.Folder ?? "";
-        var path = Path.Combine(folder, payload.Name).Replace("\\", "/").ToLowerInvariant();
+        var path = Path.Combine(folder, payload.Name!).Replace("\\", "/").ToLowerInvariant();
 
         while (path.Contains("//"))
             path = path.Replace("//", "/");
@@ -43,7 +51,7 @@ public class UploadRoute : INatsuAPIRoute
 
         try
         {
-            if (payload.Content.Contains(','))
+            if (payload.Content!.Contains(','))
                 payload.Content = payload.Content.Split(",")[1];
 
             bytes = Convert.FromBase64String(payload.Content);

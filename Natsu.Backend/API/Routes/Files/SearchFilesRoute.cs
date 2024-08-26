@@ -17,6 +17,8 @@ public class SearchFilesRoute : INatsuAPIRoute
 
         var all = TaggedFileHelper.All;
         all.RemoveAll(x => !matches(x, query));
+        all.Sort((a, b) => a.Created.CompareTo(b.Created));
+        all.Reverse();
 
         var files = all.Skip(offset).Take(50);
         await interaction.Reply(HttpStatusCode.OK, files);

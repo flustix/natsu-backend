@@ -25,7 +25,7 @@ public class DeleteFileRoute : INatsuAPIRoute
         var deleted = TaggedFileHelper.Delete(file.ID);
 
         if (deleted)
-            await interaction.Reply(HttpStatusCode.NoContent, null);
+            await interaction.Reply(HttpStatusCode.NoContent);
         else
             await interaction.ReplyError(HttpStatusCode.NotModified, "Failed to delete.");
     }

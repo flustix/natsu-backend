@@ -13,14 +13,18 @@ public class SearchFilesRoute : INatsuAPIRoute
     public async Task Handle(NatsuAPIInteraction interaction)
     {
         var query = interaction.GetStringQuery("q") ?? "";
+        var limit = interaction.GetIntQuery("l") ?? 25;
         var offset = interaction.GetIntQuery("o") ?? 0;
+
+        limit = Math.Clamp(limit, 1, 100);
+        offset = Math.Max(offset, 0);
 
         var all = TaggedFileHelper.All;
         all.RemoveAll(x => !matches(x, query));
         all.Sort((a, b) => a.Created.CompareTo(b.Created));
         all.Reverse();
 
-        var files = all.Skip(offset).Take(50);
+        var files = all.Skip(offset).Take(limit);
         await interaction.Reply(HttpStatusCode.OK, files);
     }
 

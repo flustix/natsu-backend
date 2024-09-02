@@ -43,6 +43,10 @@ public class TaggedFile
     [JsonProperty("description")]
     public string Description { get; set; } = string.Empty;
 
+    [BsonElement("source")]
+    [JsonProperty("source")]
+    public string Source { get; set; } = string.Empty;
+
     [BsonElement("nsfw")]
     [JsonProperty("nsfw")]
     public bool NotSafeForWork { get; set; }

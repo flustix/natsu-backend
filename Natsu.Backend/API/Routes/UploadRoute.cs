@@ -83,6 +83,7 @@ public class UploadRoute : INatsuAPIRoute
             file.Created = file.Modified = payload.CreationDate ?? DateTimeOffset.Now.ToUnixTimeSeconds();
             file.NotSafeForWork = payload.NotSafeForWork ?? false;
             file.Description = payload.Description ?? "";
+            file.Source = payload.Source ?? "";
         });
 
         await interaction.Reply(HttpStatusCode.Created, taggedFile);
@@ -98,6 +99,9 @@ public class UploadRoute : INatsuAPIRoute
 
         [JsonProperty("description")]
         public string? Description { get; set; }
+
+        [JsonProperty("source")]
+        public string? Source { get; set; }
 
         [JsonProperty("folder")]
         public string? Folder { get; set; }

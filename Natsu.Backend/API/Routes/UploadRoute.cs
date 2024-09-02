@@ -2,6 +2,7 @@
 using Natsu.Backend.API.Components;
 using Natsu.Backend.Components;
 using Natsu.Backend.Database.Helpers;
+using Natsu.Backend.Utils;
 using Newtonsoft.Json;
 
 namespace Natsu.Backend.API.Routes;
@@ -40,21 +41,7 @@ public class UploadRoute : INatsuAPIRoute
         }
 
         var folder = payload.Folder ?? "";
-        var path = Path.Combine(folder, payload.Name!).ToLowerInvariant();
-
-        // change from backslash to slash
-        path = path.Replace("\\", "/");
-
-        // remove double slashes
-        while (path.Contains("//"))
-            path = path.Replace("//", "/");
-
-        // add leading
-        if (!path.StartsWith('/'))
-            path = '/' + path;
-
-        // remove trailing
-        path = path.TrimEnd('/');
+        var path = Path.Combine(folder, payload.Name!).FormatPath();
 
         // check if already exists
         if (TaggedFileHelper.GetByPath(path) != null)

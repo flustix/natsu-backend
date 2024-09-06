@@ -2,8 +2,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Natsu.Backend", "Natsu.Backend\Natsu.Backend.csproj", "{89EC121F-FE89-4C5E-ABCF-D0BAAA9D47C2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Midori", "..\Midori\Midori.csproj", "{35C5EFCC-77CA-402D-9C5C-774D6F9B57E3}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

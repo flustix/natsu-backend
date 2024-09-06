@@ -12,33 +12,27 @@ public class UploadRoute : INatsuAPIRoute
     public string RoutePath => "/upload";
     public HttpMethod Method => HttpMethod.Post;
 
-    public async Task Handle(NatsuAPIInteraction interaction)
+    public IEnumerable<(string, string)> Validate(NatsuAPIInteraction interaction)
     {
         if (!interaction.TryParseBody<Payload>(out var payload))
-        {
-            await interaction.ReplyError(HttpStatusCode.BadRequest, "invalid payload");
-            return;
-        }
+            yield return ("_form", "Invalid json body.");
 
-        var valid = true;
-
-        if (string.IsNullOrEmpty(payload.Content))
+        if (payload is not null)
         {
-            interaction.AddError("content", "Content can not be empty.");
-            valid = false;
-        }
+            interaction.AddCache("payload", payload);
 
-        if (string.IsNullOrWhiteSpace(payload.Name))
-        {
-            interaction.AddError("name", "Filename can not be empty.");
-            valid = false;
-        }
+            if (string.IsNullOrEmpty(payload.Content))
+                yield return ("content", "Content can not be empty.");
 
-        if (!valid)
-        {
-            await interaction.ReplyError(HttpStatusCode.BadRequest, "Invalid form.");
-            return;
+            if (string.IsNullOrWhiteSpace(payload.Name))
+                yield return ("name", "Filename can not be empty.");
         }
+    }
+
+    public async Task Handle(NatsuAPIInteraction interaction)
+    {
+        if (!interaction.TryGetCache<Payload>("payload", out var payload))
+            throw new CacheMissingException("payload");
 
         var folder = payload.Folder ?? "";
         var path = Path.Combine(folder, payload.Name!).FormatPath();

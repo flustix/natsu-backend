@@ -20,4 +20,7 @@ public static class StringUtils
 
         return path;
     }
+
+    public static bool IsValidFilePath(this string path) => !path.Any(Path.GetInvalidFileNameChars().Contains);
+    public static bool IsValidDirectoryPath(this string path) => !path.Any(Path.GetInvalidPathChars().Contains);
 }

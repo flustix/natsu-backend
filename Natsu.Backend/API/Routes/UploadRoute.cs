@@ -26,6 +26,11 @@ public class UploadRoute : INatsuAPIRoute
 
             if (string.IsNullOrWhiteSpace(payload.Name))
                 yield return ("name", "Filename can not be empty.");
+            else if (!payload.Name.IsValidFilePath())
+                yield return ("name", "Filename is not valid.");
+
+            if (!string.IsNullOrWhiteSpace(payload.Folder) && !payload.Folder.IsValidFilePath())
+                yield return ("folder", "Directory name is not valid.");
         }
     }
 

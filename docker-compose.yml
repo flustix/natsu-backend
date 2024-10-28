@@ -10,11 +10,19 @@ services:
     environment:
       - MONGO_CONNECTION=mongodb://localhost:27017
       - MONGO_DATABASE=natsu
-      - FFMPEG_PATH=ffmpeg
     ports:
       - "6510:6510"
     extra_hosts:
       - "host.docker.internal:host-gateway"
+    labels:
+      - com.centurylinklabs.watchtower.scope=natsu
+  watchtower:
+    container_name: natsu-watchtower
+    image: ghcr.io/containrrr/watchtower
+    restart: unless-stopped
+    command: --cleanup --scope natsu --interval 900 --include-restarting
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
 volumes:
   natsu:
     name: natsu-storage

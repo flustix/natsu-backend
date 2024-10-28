@@ -29,7 +29,7 @@ public static class Program
 
         var server = new APIServer<NatsuAPIInteraction>();
         server.AddRoutesFromAssembly<INatsuAPIRoute>(typeof(Program).Assembly);
-        server.Start(new[] { $"http://+:{Config.Port}/" });
+        server.Start(new[] { RuntimeUtils.IsDebugBuild ? $"http://localhost:{Config.Port}/" : $"http://+:{Config.Port}/" });
 
         Logger.Log("Finished starting!");
         await Task.Delay(-1); // loop forever
@@ -43,6 +43,7 @@ public static class Program
         {
             MongoString = env["MONGO_CONNECTION"]?.ToString() ?? "mongodb://localhost:27017",
             MongoDatabase = env["MONGO_DATABASE"]?.ToString() ?? "natsu",
+            DataPath = env["DATA_PATH"]?.ToString() ?? "/files",
             FfmpegPath = env["FFMPEG_PATH"]?.ToString() ?? "ffmpeg"
         };
     }

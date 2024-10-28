@@ -1,9 +1,10 @@
 name: natsu
 services:
   natsu:
-    image: natsu
+    image: flustix/natsu:latest
     user: root # surely this is fine
     container_name: natsu-backend
+    restart: unless-stopped
     volumes:
       - natsu:/files
     environment:

@@ -6,7 +6,7 @@ namespace Natsu.Backend.Components;
 
 public static class FileManager
 {
-    private static string folderPath => Path.Combine(Program.Config.DataPath, "files");
+    private static string folderPath => Program.Config.DataPath;
 
     public static TaggedFile CreateFile(string path, byte[] content, Action<TaggedFile>? applyData = null)
     {

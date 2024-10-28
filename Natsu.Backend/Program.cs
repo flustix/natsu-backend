@@ -15,10 +15,9 @@ public static class Program
     public static async Task Main(string[] args)
     {
         AppDomain.CurrentDomain.UnhandledException += (_, eventArgs) => Logger.Error((Exception)eventArgs.ExceptionObject, "Unhandled exception!");
-
         JsonUtils.Converters.Add(new JsonObjectIdConverter());
 
-        await loadConfig();
+        loadConfig();
 
         MongoDatabase.Initialize(Config.MongoString, Config.MongoDatabase);
 
@@ -30,20 +29,21 @@ public static class Program
 
         var server = new APIServer<NatsuAPIInteraction>();
         server.AddRoutesFromAssembly<INatsuAPIRoute>(typeof(Program).Assembly);
-        server.Start(Config.Port);
+        server.Start(new[] { $"http://+:{Config.Port}/" });
 
         Logger.Log("Finished starting!");
         await Task.Delay(-1); // loop forever
     }
 
-    private static async Task loadConfig()
+    private static void loadConfig()
     {
-        if (!File.Exists("config.json"))
-        {
-            Logger.Log("Config file not found! Creating a new one...", LoggingTarget.General, LogLevel.Warning);
-            await File.WriteAllTextAsync("config.json", new Config().Serialize(true));
-        }
+        var env = Environment.GetEnvironmentVariables();
 
-        Config = (await File.ReadAllTextAsync("config.json")).Deserialize<Config>() ?? throw new Exception("Failed to load config!");
+        Config = new Config
+        {
+            MongoString = env["MONGO_CONNECTION"]?.ToString() ?? "mongodb://localhost:27017",
+            MongoDatabase = env["MONGO_DATABASE"]?.ToString() ?? "natsu",
+            FfmpegPath = env["FFMPEG_PATH"]?.ToString() ?? "ffmpeg"
+        };
     }
 }

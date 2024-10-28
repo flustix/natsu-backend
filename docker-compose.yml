@@ -1,0 +1,22 @@
+name: natsu
+services:
+  natsu:
+    image: natsu
+    user: root # surely this is fine
+    container_name: natsu-backend
+    volumes:
+      - natsu:/files
+    environment:
+      - MONGO_CONNECTION=mongodb://localhost:27017
+      - MONGO_DATABASE=natsu
+      - FFMPEG_PATH=ffmpeg
+    ports:
+      - "6510:6510"
+    build:
+      context: .
+      dockerfile: Dockerfile
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+volumes:
+  natsu:
+    name: natsu-storage

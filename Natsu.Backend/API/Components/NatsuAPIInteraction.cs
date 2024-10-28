@@ -8,6 +8,10 @@ namespace Natsu.Backend.API.Components;
 
 public class NatsuAPIInteraction : JsonInteraction<NatsuAPIResponse>
 {
+    protected override string[] AllowedMethods => base.AllowedMethods.Concat(extra_methods).ToArray();
+
+    private static readonly string[] extra_methods = { "PATCH" };
+
     private Dictionary<string, object>? cache;
     private Dictionary<string, string>? errors;
 

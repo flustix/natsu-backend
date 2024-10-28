@@ -13,9 +13,6 @@ services:
       - FFMPEG_PATH=ffmpeg
     ports:
       - "6510:6510"
-    build:
-      context: .
-      dockerfile: Dockerfile
     extra_hosts:
       - "host.docker.internal:host-gateway"
 volumes:

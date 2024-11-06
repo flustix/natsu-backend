@@ -1,4 +1,5 @@
-﻿using MongoDB.Driver;
+﻿using MongoDB.Bson;
+using MongoDB.Driver;
 using Natsu.Backend.Models;
 
 namespace Natsu.Backend.Database.Helpers;
@@ -10,4 +11,7 @@ public static class TagHelper
     public static List<FileTag> All => collection.Find(_ => true).ToList();
 
     public static void Add(FileTag tag) => collection.InsertOne(tag);
+
+    public static FileTag? Get(string id) => !ObjectId.TryParse(id, out var obj) ? null : Get(obj);
+    public static FileTag? Get(ObjectId id) => collection.Find(x => x.ID == id).FirstOrDefault();
 }

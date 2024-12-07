@@ -41,6 +41,7 @@ public static class Program
 
         Config = new Config
         {
+            ServerName = env["SERVER_NAME"]?.ToString() ?? Environment.MachineName,
             MongoString = env["MONGO_CONNECTION"]?.ToString() ?? "mongodb://localhost:27017",
             MongoDatabase = env["MONGO_DATABASE"]?.ToString() ?? "natsu",
             DataPath = env["DATA_PATH"]?.ToString() ?? "/files",

@@ -2,4 +2,5 @@ bin
 obj
 .idea
 logs/
+files/
 Natsu.Backend.sln.DotSettings.user

@@ -32,7 +32,19 @@ public class SearchFilesRoute : INatsuAPIRoute
     {
         var words = query.Split(' ');
 
-        var match = words.All(w => file.Description.Contains(w));
+        var match = words.All(w =>
+        {
+            var word = w;
+            var invert = false;
+
+            if (word.StartsWith('!'))
+            {
+                word = word[1..];
+                invert = true;
+            }
+
+            return file.Description.Contains(word) == !invert;
+        });
         return match;
     }
 }

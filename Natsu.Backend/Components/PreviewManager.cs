@@ -8,14 +8,13 @@ using SixLabors.ImageSharp.Processing;
 
 namespace Natsu.Backend.Components;
 
-public class PreviewManager
+public static class PreviewManager
 {
     public static string CreatePreview(TaggedFile file, byte[] content)
     {
         try
         {
             var mime = file.MimeType;
-            // Logger.Log($"creating preview for {file.FilePath} ({mime})", LoggingTarget.General, LogLevel.Debug);
 
             if (FileUtils.IsImage(mime))
                 return createImagePreview(content);
@@ -40,15 +39,16 @@ public class PreviewManager
         videoFs.Write(content);
         videoFs.Dispose();
 
+        var length = getFrameCount(videoPath);
+        var frame = length <= 1 ? 0 : (int)(length / 2);
+
         var extractor = new Process
         {
             StartInfo = new ProcessStartInfo
             {
                 FileName = Program.Config.FfmpegPath,
-                Arguments = $"-y -i \"{videoPath}\" -vf \"select=eq(n\\,0)\" -q:v 3 \"{imagePath}\"",
+                Arguments = $"-y -i \"{videoPath}\" -vf \"select=eq(n\\,{frame})\" -q:v 3 \"{imagePath}\"",
                 CreateNoWindow = true,
-                // RedirectStandardOutput = true,
-                // RedirectStandardError = true,
                 UseShellExecute = false,
                 WindowStyle = ProcessWindowStyle.Hidden
             }
@@ -60,9 +60,31 @@ public class PreviewManager
         return createImagePreview(File.ReadAllBytes(imagePath));
     }
 
+    private static double getFrameCount(string path)
+    {
+        var extractor = new Process
+        {
+            StartInfo = new ProcessStartInfo
+            {
+                FileName = Program.Config.FfprobePath,
+                Arguments = $"-v error -select_streams v:0 -count_packets -show_entries stream=nb_read_packets -of csv=p=0 \"{path}\"",
+                CreateNoWindow = true,
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+                UseShellExecute = false,
+                WindowStyle = ProcessWindowStyle.Hidden
+            }
+        };
+
+        extractor.Start();
+        extractor.WaitForExit();
+
+        var output = extractor.StandardOutput.ReadToEnd();
+        return int.TryParse(output, out var count) ? count : 0;
+    }
+
     private static string createImagePreview(byte[] content)
     {
-        // Logger.Log("creating image preview", LoggingTarget.General, LogLevel.Debug);
         using var original = Image.Load<Rgba32>(content);
         var smallest = Math.Min(original.Width, original.Height);
 

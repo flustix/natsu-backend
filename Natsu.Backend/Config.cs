@@ -11,4 +11,5 @@ public class Config
     public string DataPath { get; set; } = "/files";
     public int Port { get; set; } = 6510;
     public string FfmpegPath { get; init; } = "ffmpeg";
+    public string FfprobePath { get; init; } = "ffprobe";
 }

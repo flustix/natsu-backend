@@ -1,4 +1,5 @@
-﻿using Natsu.Backend.API.Components;
+﻿using System.Net;
+using Natsu.Backend.API.Components;
 using Natsu.Backend.Components;
 using Natsu.Backend.Database.Helpers;
 
@@ -16,7 +17,7 @@ public class PreviewRoute : INatsuAPIRoute
 
         if (string.IsNullOrEmpty(id))
         {
-            interaction.ReplyNothing(404);
+            await interaction.Reply(HttpStatusCode.NotFound);
             return;
         }
 
@@ -24,7 +25,7 @@ public class PreviewRoute : INatsuAPIRoute
 
         if (file is null)
         {
-            interaction.ReplyNothing(404);
+            await interaction.Reply(HttpStatusCode.NotFound);
             return;
         }
 
@@ -32,7 +33,7 @@ public class PreviewRoute : INatsuAPIRoute
 
         if (string.IsNullOrEmpty(hash))
         {
-            interaction.ReplyNothing(404);
+            await interaction.Reply(HttpStatusCode.NotFound);
             return;
         }
 
@@ -40,7 +41,7 @@ public class PreviewRoute : INatsuAPIRoute
 
         if (!File.Exists(path))
         {
-            interaction.ReplyNothing(404);
+            await interaction.Reply(HttpStatusCode.NotFound);
             return;
         }
 

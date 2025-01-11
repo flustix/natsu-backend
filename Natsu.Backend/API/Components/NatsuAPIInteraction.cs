@@ -45,12 +45,6 @@ public class NatsuAPIInteraction : JsonInteraction<NatsuAPIResponse>
         }
     }
 
-    public async void ReplyNothing(int code)
-    {
-        Response.StatusCode = code;
-        await ReplyData(Array.Empty<byte>());
-    }
-
     protected override Task ReplyJson(NatsuAPIResponse response)
     {
         response.Errors = errors;

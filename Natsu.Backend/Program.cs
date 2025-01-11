@@ -45,7 +45,8 @@ public static class Program
             MongoString = env["MONGO_CONNECTION"]?.ToString() ?? "mongodb://localhost:27017",
             MongoDatabase = env["MONGO_DATABASE"]?.ToString() ?? "natsu",
             DataPath = env["DATA_PATH"]?.ToString() ?? "/files",
-            FfmpegPath = env["FFMPEG_PATH"]?.ToString() ?? "ffmpeg"
+            FfmpegPath = env["FFMPEG_PATH"]?.ToString() ?? "ffmpeg",
+            FfprobePath = env["FFPROBE_PATH"]?.ToString() ?? "ffprobe",
         };
     }
 }

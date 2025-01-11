@@ -32,7 +32,7 @@ public static class Program
         server.Start(new[] { RuntimeUtils.IsDebugBuild ? $"http://localhost:{Config.Port}/" : $"http://+:{Config.Port}/" });
 
         Logger.Log("Finished starting!");
-        await Task.Delay(-1); // loop forever
+        await Task.Delay(-1);
     }
 
     private static void loadConfig()

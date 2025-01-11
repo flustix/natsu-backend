@@ -1,5 +1,6 @@
 ﻿using Midori.Logging;
 using Natsu.Backend.Components;
+using Natsu.Backend.Database.Helpers;
 
 namespace Natsu.Backend.Tests;
 
@@ -17,9 +18,28 @@ public class TestRunner
                 saveFile();
                 break;
 
+            case "compare":
+                compare();
+                break;
+
             default:
                 throw new Exception("Unknown test!");
         }
+    }
+
+    private static void compare()
+    {
+        var a = TaggedFileHelper.Get("676c41e1ec485b8befe8823c")!;
+        var b = TaggedFileHelper.Get("676c42dbec485b8befe88265")!;
+        var c = TaggedFileHelper.Get("676c41afec485b8befe88236")!;
+        var d = TaggedFileHelper.Get("676c526573389ee551042f54")!;
+
+        Logger.Log($"ab {ImageComparer.CalculateSimilarity(a, b)}");
+        Logger.Log($"bc {ImageComparer.CalculateSimilarity(b, c)}");
+        Logger.Log($"ac {ImageComparer.CalculateSimilarity(a, c)}");
+        Logger.Log($"da {ImageComparer.CalculateSimilarity(d, a)}");
+        Logger.Log($"bd {ImageComparer.CalculateSimilarity(b, d)}");
+        Logger.Log($"cd {ImageComparer.CalculateSimilarity(c, d)}");
     }
 
     private static void saveFile()

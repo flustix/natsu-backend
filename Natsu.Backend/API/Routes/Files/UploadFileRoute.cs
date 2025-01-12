@@ -6,11 +6,11 @@ using Natsu.Backend.Database.Helpers;
 using Natsu.Backend.Utils;
 using Newtonsoft.Json;
 
-namespace Natsu.Backend.API.Routes;
+namespace Natsu.Backend.API.Routes.Files;
 
-public class UploadRoute : INatsuAPIRoute, INeedsAuthorization
+public class UploadFileRoute : INatsuAPIRoute, INeedsAuthorization
 {
-    public string RoutePath => "/upload";
+    public string RoutePath => "/files";
     public HttpMethod Method => HttpMethod.Post;
 
     public IEnumerable<(string, string)> Validate(NatsuAPIInteraction interaction)

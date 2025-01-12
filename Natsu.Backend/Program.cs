@@ -29,7 +29,7 @@ public static class Program
 
         var server = new APIServer<NatsuAPIInteraction>();
         server.AddRoutesFromAssembly<INatsuAPIRoute>(typeof(Program).Assembly);
-        server.Start(new[] { RuntimeUtils.IsDebugBuild ? $"http://localhost:{Config.Port}/" : $"http://+:{Config.Port}/" });
+        server.Start(new[] { $"http://{(RuntimeUtils.IsDebugBuild ? "localhost" : "+")}:6510/" });
 
         Logger.Log("Finished starting!");
         await Task.Delay(-1);
@@ -42,8 +42,6 @@ public static class Program
         Config = new Config
         {
             ServerName = env["SERVER_NAME"]?.ToString() ?? Environment.MachineName,
-            MongoString = env["MONGO_CONNECTION"]?.ToString() ?? "mongodb://localhost:27017",
-            MongoDatabase = env["MONGO_DATABASE"]?.ToString() ?? "natsu",
             DataPath = env["DATA_PATH"]?.ToString() ?? "/files",
             FfmpegPath = env["FFMPEG_PATH"]?.ToString() ?? "ffmpeg",
             FfprobePath = env["FFPROBE_PATH"]?.ToString() ?? "ffprobe",
@@ -52,7 +50,8 @@ public static class Program
 
     private static void setupDatabase()
     {
-        MongoDatabase.Initialize(Config.MongoString, Config.MongoDatabase);
+        var host = RuntimeUtils.IsDebugBuild ? "localhost" : "mongo";
+        MongoDatabase.Initialize($"mongodb://{host}:27017", "natsu");
 
         if (UserHelper.All.Count == 0)
         {

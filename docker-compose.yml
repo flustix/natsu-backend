@@ -1,4 +1,5 @@
 name: natsu
+
 services:
   natsu:
     image: flustix/natsu:latest
@@ -7,15 +8,38 @@ services:
     restart: unless-stopped
     volumes:
       - natsu:/files
-    environment:
-      - MONGO_CONNECTION=mongodb://localhost:27017
-      - MONGO_DATABASE=natsu
-    ports:
-      - "6510:6510"
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
+    networks:
+      - natsu
     labels:
       - com.centurylinklabs.watchtower.scope=natsu
+    depends_on:
+      - mongo
+
+  web:
+    image: flustix/natsu-web:latest
+    container_name: natsu-web
+    restart: unless-stopped
+    ports:
+      - "6511:80"
+    networks:
+      - natsu
+    labels:
+      - com.centurylinklabs.watchtower.scope=natsu
+
+  mongo:
+    image: mongo:latest
+    container_name: natsu-db
+    restart: unless-stopped
+    volumes:
+      - db:/data/db
+      - db-config:/data/configdb
+    networks:
+      - natsu
+    labels:
+      - com.centurylinklabs.watchtower.scope=natsu
+    healthcheck:
+      test: echo 'db.stats().ok' | mongo localhost:27017/test --quiet
+
   watchtower:
     container_name: natsu-watchtower
     image: ghcr.io/containrrr/watchtower
@@ -23,6 +47,16 @@ services:
     command: --cleanup --scope natsu --interval 900 --include-restarting
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+
 volumes:
   natsu:
     name: natsu-storage
+  db:
+    name: natsu-db
+  db-config:
+    name: natsu-db-config
+
+networks:
+  natsu:
+    driver: bridge
+    name: natsu-network

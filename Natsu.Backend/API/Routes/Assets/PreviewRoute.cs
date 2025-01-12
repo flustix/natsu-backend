@@ -1,52 +1,17 @@
-﻿using System.Net;
-using Natsu.Backend.API.Components;
-using Natsu.Backend.Components;
-using Natsu.Backend.Database.Helpers;
+﻿using Natsu.Backend.API.Components;
+using Natsu.Backend.Models;
 
 namespace Natsu.Backend.API.Routes.Assets;
 
-public class PreviewRoute : INatsuAPIRoute
+public class PreviewRoute : AbstractAssetRoute
 {
-    public string RoutePath => "/preview/:id";
-    public HttpMethod Method => HttpMethod.Get;
+    public override string RoutePath => "/preview/:id";
 
-    public async Task Handle(NatsuAPIInteraction interaction)
+    public override string GetHash(TaggedFile file) => file.PreviewHash;
+
+    public override async Task SendResponse(NatsuAPIInteraction interaction, TaggedFile file, byte[] content)
     {
-        if (!interaction.TryGetStringParameter("id", out var id))
-            return;
-
-        if (string.IsNullOrEmpty(id))
-        {
-            await interaction.Reply(HttpStatusCode.NotFound);
-            return;
-        }
-
-        var file = TaggedFileHelper.Get(id);
-
-        if (file is null)
-        {
-            await interaction.Reply(HttpStatusCode.NotFound);
-            return;
-        }
-
-        var hash = file.PreviewHash;
-
-        if (string.IsNullOrEmpty(hash))
-        {
-            await interaction.Reply(HttpStatusCode.NotFound);
-            return;
-        }
-
-        var path = FileManager.GetPathFor(hash);
-
-        if (!File.Exists(path))
-        {
-            await interaction.Reply(HttpStatusCode.NotFound);
-            return;
-        }
-
-        var bytes = await File.ReadAllBytesAsync(path);
-        interaction.Response.ContentType = file.MimeType;
-        await interaction.ReplyData(bytes);
+        interaction.Response.ContentType = "image/jpg";
+        await interaction.ReplyData(content);
     }
 }

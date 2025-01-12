@@ -1,38 +1,17 @@
-﻿using System.Net;
-using Natsu.Backend.API.Components;
-using Natsu.Backend.Components;
-using Natsu.Backend.Database.Helpers;
+﻿using Natsu.Backend.API.Components;
+using Natsu.Backend.Models;
 
 namespace Natsu.Backend.API.Routes.Assets;
 
-public class AssetRoute : INatsuAPIRoute
+public class AssetRoute : AbstractAssetRoute
 {
-    public string RoutePath => "/assets/:id";
-    public HttpMethod Method => HttpMethod.Get;
+    public override string RoutePath => "/assets/:id";
 
-    public async Task Handle(NatsuAPIInteraction interaction)
+    public override string GetHash(TaggedFile file) => file.Hash;
+
+    public override async Task SendResponse(NatsuAPIInteraction interaction, TaggedFile file, byte[] content)
     {
-        if (!interaction.TryGetStringParameter("id", out var id))
-            return;
-
-        var file = TaggedFileHelper.Get(id);
-
-        if (file is null)
-        {
-            await interaction.Reply(HttpStatusCode.NotFound);
-            return;
-        }
-
-        var path = FileManager.GetPathFor(file.Hash);
-
-        if (!File.Exists(path))
-        {
-            await interaction.Reply(HttpStatusCode.NotFound);
-            return;
-        }
-
-        var bytes = await File.ReadAllBytesAsync(path);
         interaction.Response.ContentType = file.MimeType;
-        await interaction.ReplyData(bytes);
+        await interaction.ReplyData(content);
     }
 }

@@ -41,7 +41,8 @@ public static class Program
 
         Config = new Config
         {
-            ServerName = env["SERVER_NAME"]?.ToString() ?? Environment.MachineName
+            BaseUrl = env["BASE_URL"]?.ToString() ?? "http://localhost:6510",
+            ServerName = env["SERVER_NAME"]?.ToString() ?? Environment.MachineName,
         };
     }
 

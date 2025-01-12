@@ -6,6 +6,10 @@ services:
     user: root # surely this is fine
     container_name: natsu-backend
     restart: unless-stopped
+    environment:
+      - DEFAULT_USER=admin
+      - DEFAULT_PASS=admin
+      - SERVER_NAME=localhost
     volumes:
       - natsu:/files
     networks:

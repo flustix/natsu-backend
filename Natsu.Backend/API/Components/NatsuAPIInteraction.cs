@@ -1,19 +1,60 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using Midori.API.Components;
+using Midori.API.Components.Interfaces;
 using Midori.API.Components.Json;
 using Midori.Utils;
+using MongoDB.Bson;
+using Natsu.Backend.Database.Helpers;
 
 namespace Natsu.Backend.API.Components;
 
-public class NatsuAPIInteraction : JsonInteraction<NatsuAPIResponse>
+public class NatsuAPIInteraction : JsonInteraction<NatsuAPIResponse>, IHasAuthorizationInfo
 {
     protected override string[] AllowedMethods => base.AllowedMethods.Concat(extra_methods).ToArray();
 
     private static readonly string[] extra_methods = { "PATCH" };
 
+    public ObjectId UserID { get; private set; } = ObjectId.Empty;
+
+    public bool IsAuthorized => UserID != ObjectId.Empty;
+    public string AuthorizationError { get; private set; } = string.Empty;
+
     private Dictionary<string, object>? cache;
     private Dictionary<string, string>? errors;
+
+    protected override void OnPopulate()
+    {
+        base.OnPopulate();
+
+        var token = Request.Headers["Authorization"];
+        token ??= Request.Cookies["token"]?.Value;
+
+        if (string.IsNullOrEmpty(token))
+        {
+            AuthorizationError = "No token provided.";
+            return;
+        }
+
+        token = token.Split(" ").Last().Trim();
+        var session = SessionHelper.GetByToken(token);
+
+        if (session == null)
+        {
+            AuthorizationError = "Invalid token.";
+            return;
+        }
+
+        var user = UserHelper.Get(session.UserID);
+
+        if (user == null)
+        {
+            AuthorizationError = "User not found.";
+            return;
+        }
+
+        UserID = session.UserID;
+    }
 
     public void AddError(string field, string reason)
     {

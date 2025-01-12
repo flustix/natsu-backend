@@ -15,6 +15,8 @@ public static class TaggedFileHelper
     public static TaggedFile? Get(string id) => !ObjectId.TryParse(id, out var obj) ? null : Get(obj);
     public static TaggedFile? Get(ObjectId id) => collection.Find(x => x.ID == id).FirstOrDefault();
 
+    public static List<TaggedFile> OwnedBy(ObjectId owner) => collection.Find(x => x.Owner == owner).ToList();
+
     public static bool Update(TaggedFile file) => collection.ReplaceOne(f => f.ID == file.ID, file).IsAcknowledged;
 
     public static bool Delete(string id) => ObjectId.TryParse(id, out var obj) && Delete(obj);
@@ -25,5 +27,5 @@ public static class TaggedFileHelper
         return result.DeletedCount > 0;
     }
 
-    public static TaggedFile? GetByPath(string id) => collection.Find(x => x.FilePath == id).FirstOrDefault();
+    public static TaggedFile? GetByPath(string id, ObjectId owner) => collection.Find(x => x.FilePath == id && x.Owner == owner).FirstOrDefault();
 }

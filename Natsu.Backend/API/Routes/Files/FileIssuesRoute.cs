@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using Midori.API.Components.Interfaces;
 using Natsu.Backend.API.Components;
 using Natsu.Backend.Database.Helpers;
 using Natsu.Backend.Models;
@@ -8,7 +9,7 @@ namespace Natsu.Backend.API.Routes.Files;
 /// <summary>
 /// Returns all files with issues. (missing description, source, tags, etc.)
 /// </summary>
-public class FileIssuesRoute : INatsuAPIRoute
+public class FileIssuesRoute : INatsuAPIRoute, INeedsAuthorization
 {
     public string RoutePath => "/files/issues";
     public HttpMethod Method => HttpMethod.Get;
@@ -22,7 +23,7 @@ public class FileIssuesRoute : INatsuAPIRoute
         limit = Math.Clamp(limit, 1, 100);
         offset = Math.Max(offset, 0);
 
-        var all = TaggedFileHelper.All.Where(f => matches(f, type)).ToList();
+        var all = TaggedFileHelper.OwnedBy(interaction.UserID).Where(f => matches(f, type)).ToList();
         all.Sort((a, b) => a.Created.CompareTo(b.Created));
         all.Reverse();
 

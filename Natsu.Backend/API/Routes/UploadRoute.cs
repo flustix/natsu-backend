@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using Midori.API.Components.Interfaces;
 using Natsu.Backend.API.Components;
 using Natsu.Backend.Components;
 using Natsu.Backend.Database.Helpers;
@@ -7,7 +8,7 @@ using Newtonsoft.Json;
 
 namespace Natsu.Backend.API.Routes;
 
-public class UploadRoute : INatsuAPIRoute
+public class UploadRoute : INatsuAPIRoute, INeedsAuthorization
 {
     public string RoutePath => "/upload";
     public HttpMethod Method => HttpMethod.Post;
@@ -43,7 +44,7 @@ public class UploadRoute : INatsuAPIRoute
         var path = Path.Combine(folder, payload.Name!).FormatPath();
 
         // check if already exists
-        if (TaggedFileHelper.GetByPath(path) != null)
+        if (TaggedFileHelper.GetByPath(path, interaction.UserID) != null)
         {
             await interaction.ReplyError(HttpStatusCode.BadRequest, "This path is already used.");
             return;
@@ -66,6 +67,7 @@ public class UploadRoute : INatsuAPIRoute
 
         var taggedFile = FileManager.CreateFile(path, bytes, file =>
         {
+            file.Owner = interaction.UserID;
             file.Created = file.Modified = payload.CreationDate ?? DateTimeOffset.Now.ToUnixTimeSeconds();
             file.NotSafeForWork = payload.NotSafeForWork ?? false;
             file.Description = payload.Description ?? "";

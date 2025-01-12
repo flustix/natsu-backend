@@ -1,11 +1,12 @@
 ﻿using System.Net;
+using Midori.API.Components.Interfaces;
 using Natsu.Backend.API.Components;
 using Natsu.Backend.Database.Helpers;
 using Newtonsoft.Json;
 
 namespace Natsu.Backend.API.Routes.Folders;
 
-public class GetFolderContentRoute : INatsuAPIRoute
+public class GetFolderContentRoute : INatsuAPIRoute, INeedsAuthorization
 {
     public string RoutePath => "/folders";
     public HttpMethod Method => HttpMethod.Get;
@@ -21,7 +22,7 @@ public class GetFolderContentRoute : INatsuAPIRoute
         if (string.IsNullOrWhiteSpace(path))
             path = "/";
 
-        var all = TaggedFileHelper.All;
+        var all = TaggedFileHelper.OwnedBy(interaction.UserID);
         var dirs = all.Select(f => f.Directory).Distinct();
         dirs = dirs.Where(d =>
         {

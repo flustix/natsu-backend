@@ -12,6 +12,10 @@ public class TaggedFile
     [JsonProperty("id")]
     public ObjectId ID { get; set; } = ObjectId.GenerateNewId();
 
+    [BsonElement("owner")]
+    [JsonProperty("owner")]
+    public ObjectId Owner { get; set; } = ObjectId.Empty;
+
     [BsonElement("path")]
     [JsonProperty("path")]
     public string FilePath { get; set; } = string.Empty;

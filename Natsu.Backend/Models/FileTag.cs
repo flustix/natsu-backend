@@ -27,4 +27,11 @@ public class FileTag
     [BsonElement("parents")]
     [JsonProperty("parents")]
     public List<ObjectId> Parents { get; set; } = new();
+
+    /// <summary>
+    /// The Owner of this tag.
+    /// </summary>
+    [BsonElement("owner")]
+    [JsonProperty("owner")]
+    public ObjectId Owner { get; set; } = ObjectId.Empty;
 }

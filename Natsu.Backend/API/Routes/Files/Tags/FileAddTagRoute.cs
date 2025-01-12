@@ -1,10 +1,11 @@
 ﻿using System.Net;
+using Midori.API.Components.Interfaces;
 using Natsu.Backend.API.Components;
 using Natsu.Backend.Database.Helpers;
 
 namespace Natsu.Backend.API.Routes.Files.Tags;
 
-public class FileAddTagRoute : INatsuAPIRoute
+public class FileAddTagRoute : INatsuAPIRoute, INeedsAuthorization
 {
     public string RoutePath => "/files/:f/tags/:t";
     public HttpMethod Method => HttpMethod.Put;
@@ -19,7 +20,7 @@ public class FileAddTagRoute : INatsuAPIRoute
 
         var file = TaggedFileHelper.Get(fileID);
 
-        if (file is null)
+        if (file is null || file.Owner != interaction.UserID)
         {
             await interaction.ReplyError(HttpStatusCode.NotFound, "File not found.");
             return;
@@ -27,7 +28,7 @@ public class FileAddTagRoute : INatsuAPIRoute
 
         var tag = TagHelper.Get(tagID);
 
-        if (tag is null)
+        if (tag is null || tag.Owner != interaction.UserID)
         {
             await interaction.ReplyError(HttpStatusCode.NotFound, "Tag not found.");
             return;

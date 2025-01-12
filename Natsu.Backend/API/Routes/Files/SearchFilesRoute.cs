@@ -1,11 +1,12 @@
 ﻿using System.Net;
+using Midori.API.Components.Interfaces;
 using Natsu.Backend.API.Components;
 using Natsu.Backend.Database.Helpers;
 using Natsu.Backend.Models;
 
 namespace Natsu.Backend.API.Routes.Files;
 
-public class SearchFilesRoute : INatsuAPIRoute
+public class SearchFilesRoute : INatsuAPIRoute, INeedsAuthorization
 {
     public string RoutePath => "/files";
     public HttpMethod Method => HttpMethod.Get;
@@ -19,7 +20,7 @@ public class SearchFilesRoute : INatsuAPIRoute
         limit = Math.Clamp(limit, 1, 100);
         offset = Math.Max(offset, 0);
 
-        var all = TaggedFileHelper.All;
+        var all = TaggedFileHelper.OwnedBy(interaction.UserID);
         all.RemoveAll(x => !matches(x, query));
         all.Sort((a, b) => a.Created.CompareTo(b.Created));
         all.Reverse();

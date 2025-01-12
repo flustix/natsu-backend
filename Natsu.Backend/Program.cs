@@ -3,6 +3,7 @@ using Midori.Logging;
 using Midori.Utils;
 using Natsu.Backend.API.Components;
 using Natsu.Backend.Database;
+using Natsu.Backend.Database.Helpers;
 using Natsu.Backend.Tests;
 using Natsu.Backend.Utils.Json;
 
@@ -18,8 +19,7 @@ public static class Program
         JsonUtils.Converters.Add(new JsonObjectIdConverter());
 
         loadConfig();
-
-        MongoDatabase.Initialize(Config.MongoString, Config.MongoDatabase);
+        setupDatabase();
 
         if (args.Any(x => x.StartsWith("--test:")))
         {
@@ -48,5 +48,40 @@ public static class Program
             FfmpegPath = env["FFMPEG_PATH"]?.ToString() ?? "ffmpeg",
             FfprobePath = env["FFPROBE_PATH"]?.ToString() ?? "ffprobe",
         };
+    }
+
+    private static void setupDatabase()
+    {
+        MongoDatabase.Initialize(Config.MongoString, Config.MongoDatabase);
+
+        if (UserHelper.All.Count == 0)
+        {
+            Logger.Log("No users found, creating default user...");
+
+            var name = Environment.GetEnvironmentVariable("DEFAULT_USER");
+            var pass = Environment.GetEnvironmentVariable("DEFAULT_PASS");
+
+            if (string.IsNullOrWhiteSpace(name))
+                Logger.Log("No default user found, using 'admin' as default username.", LoggingTarget.General, LogLevel.Warning);
+            if (string.IsNullOrWhiteSpace(pass))
+                Logger.Log("No default pass found, using 'admin' as default password.", LoggingTarget.General, LogLevel.Warning);
+
+            var user = UserHelper.Add(name ?? "admin", pass ?? "admin");
+
+            Logger.Log("Default user created!");
+
+            // migrate files and tags to the new user
+            foreach (var file in TaggedFileHelper.All)
+            {
+                file.Owner = user.ID;
+                TaggedFileHelper.Update(file);
+            }
+
+            foreach (var tag in TagHelper.All)
+            {
+                tag.Owner = user.ID;
+                TagHelper.Update(tag);
+            }
+        }
     }
 }

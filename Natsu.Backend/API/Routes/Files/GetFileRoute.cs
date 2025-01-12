@@ -1,11 +1,12 @@
 ﻿using System.Net;
+using Midori.API.Components.Interfaces;
 using Natsu.Backend.API.Components;
 using Natsu.Backend.Database.Helpers;
 using Natsu.Backend.Utils;
 
 namespace Natsu.Backend.API.Routes.Files;
 
-public class GetFileRoute : INatsuAPIRoute
+public class GetFileRoute : INatsuAPIRoute, INeedsAuthorization
 {
     public string RoutePath => "/files/:id";
     public HttpMethod Method => HttpMethod.Get;
@@ -18,9 +19,9 @@ public class GetFileRoute : INatsuAPIRoute
         var path = interaction.GetStringQuery("path") ?? "";
         path = path.FormatPath();
 
-        var file = id == "path" ? TaggedFileHelper.GetByPath(path) : TaggedFileHelper.Get(id);
+        var file = id == "path" ? TaggedFileHelper.GetByPath(path, interaction.UserID) : TaggedFileHelper.Get(id);
 
-        if (file is null)
+        if (file is null || file.Owner != interaction.UserID)
         {
             await interaction.ReplyError(HttpStatusCode.NotFound, "File not found.");
             return;

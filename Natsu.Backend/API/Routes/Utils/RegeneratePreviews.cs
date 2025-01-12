@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using Midori.API.Components.Interfaces;
 using Midori.Logging;
 using Natsu.Backend.API.Components;
 using Natsu.Backend.Components;
@@ -6,7 +7,7 @@ using Natsu.Backend.Database.Helpers;
 
 namespace Natsu.Backend.API.Routes.Utils;
 
-public class RegeneratePreviews : INatsuAPIRoute
+public class RegeneratePreviews : INatsuAPIRoute, INeedsAuthorization
 {
     public string RoutePath => "/utils/regenerate-previews";
     public HttpMethod Method => HttpMethod.Post;
@@ -15,7 +16,7 @@ public class RegeneratePreviews : INatsuAPIRoute
     {
         var thread = new Thread(() =>
         {
-            var files = TaggedFileHelper.All;
+            var files = TaggedFileHelper.OwnedBy(interaction.UserID);
 
             foreach (var file in files)
             {

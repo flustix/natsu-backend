@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using Midori.API.Components.Interfaces;
 using Natsu.Backend.API.Components;
 using Natsu.Backend.Database.Helpers;
 using Natsu.Backend.Utils;
@@ -6,7 +7,7 @@ using Newtonsoft.Json;
 
 namespace Natsu.Backend.API.Routes.Files;
 
-public class EditFileRoute : INatsuAPIRoute
+public class EditFileRoute : INatsuAPIRoute, INeedsAuthorization
 {
     public string RoutePath => "/files/:id";
     public HttpMethod Method => HttpMethod.Patch;
@@ -37,7 +38,7 @@ public class EditFileRoute : INatsuAPIRoute
 
         var file = TaggedFileHelper.Get(id);
 
-        if (file is null)
+        if (file is null || file.Owner != interaction.UserID)
         {
             await interaction.ReplyError(HttpStatusCode.NotFound, "File not found.");
             return;

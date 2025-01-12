@@ -14,4 +14,8 @@ public static class TagHelper
 
     public static FileTag? Get(string id) => !ObjectId.TryParse(id, out var obj) ? null : Get(obj);
     public static FileTag? Get(ObjectId id) => collection.Find(x => x.ID == id).FirstOrDefault();
+
+    public static List<FileTag> OwnedBy(ObjectId owner) => collection.Find(x => x.Owner == owner).ToList();
+
+    public static void Update(FileTag tag) => collection.ReplaceOne(x => x.ID == tag.ID, tag);
 }

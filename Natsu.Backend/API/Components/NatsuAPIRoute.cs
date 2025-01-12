@@ -1,7 +1,9 @@
-﻿using Midori.API.Components;
+﻿using JetBrains.Annotations;
+using Midori.API.Components;
 
 namespace Natsu.Backend.API.Components;
 
+[UsedImplicitly(ImplicitUseTargetFlags.WithInheritors)]
 public interface INatsuAPIRoute : IAPIRoute<NatsuAPIInteraction>
 {
     /// <summary>

@@ -6,8 +6,6 @@ namespace Natsu.Backend.Components;
 
 public static class FileManager
 {
-    private static string folderPath => Program.Config.DataPath;
-
     public static TaggedFile CreateFile(string path, byte[] content, Action<TaggedFile>? applyData = null)
     {
         var hash = HashUtils.GetHash(content);
@@ -48,6 +46,6 @@ public static class FileManager
         content.CopyTo(stream);
     }
 
-    public static string GetPathFor(string hash) => Path.Combine(folderPath, HashToPath(hash));
+    public static string GetPathFor(string hash) => Path.Combine("/files", HashToPath(hash));
     public static string HashToPath(string hash) => Path.Combine(hash[..1], hash[..2], hash);
 }

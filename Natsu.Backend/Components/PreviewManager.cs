@@ -46,7 +46,7 @@ public static class PreviewManager
         {
             StartInfo = new ProcessStartInfo
             {
-                FileName = Program.Config.FfmpegPath,
+                FileName = "ffmpeg",
                 Arguments = $"-y -i \"{videoPath}\" -vf \"select=eq(n\\,{frame})\" -q:v 3 \"{imagePath}\"",
                 CreateNoWindow = true,
                 UseShellExecute = false,
@@ -66,7 +66,7 @@ public static class PreviewManager
         {
             StartInfo = new ProcessStartInfo
             {
-                FileName = Program.Config.FfprobePath,
+                FileName = "ffprobe",
                 Arguments = $"-v error -select_streams v:0 -count_packets -show_entries stream=nb_read_packets -of csv=p=0 \"{path}\"",
                 CreateNoWindow = true,
                 RedirectStandardOutput = true,

@@ -41,10 +41,7 @@ public static class Program
 
         Config = new Config
         {
-            ServerName = env["SERVER_NAME"]?.ToString() ?? Environment.MachineName,
-            DataPath = env["DATA_PATH"]?.ToString() ?? "/files",
-            FfmpegPath = env["FFMPEG_PATH"]?.ToString() ?? "ffmpeg",
-            FfprobePath = env["FFPROBE_PATH"]?.ToString() ?? "ffprobe",
+            ServerName = env["SERVER_NAME"]?.ToString() ?? Environment.MachineName
         };
     }
 

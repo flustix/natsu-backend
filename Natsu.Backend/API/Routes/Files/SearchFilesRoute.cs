@@ -3,6 +3,7 @@ using Midori.API.Components.Interfaces;
 using Natsu.Backend.API.Components;
 using Natsu.Backend.Database.Helpers;
 using Natsu.Backend.Models;
+using Natsu.Backend.Utils;
 
 namespace Natsu.Backend.API.Routes.Files;
 
@@ -20,8 +21,10 @@ public class SearchFilesRoute : INatsuAPIRoute, INeedsAuthorization
         limit = Math.Clamp(limit, 1, 100);
         offset = Math.Max(offset, 0);
 
+        var search = new SearchFilter(query);
+
         var all = TaggedFileHelper.OwnedBy(interaction.UserID);
-        all.RemoveAll(x => !matches(x, query));
+        all.RemoveAll(x => !search.Match(x));
         all.Sort((a, b) => a.Created.CompareTo(b.Created));
         all.Reverse();
 

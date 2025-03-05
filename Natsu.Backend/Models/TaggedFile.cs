@@ -34,7 +34,7 @@ public class TaggedFile
 
     [BsonIgnore]
     [JsonProperty("mime")]
-    public string MimeType => FileUtils.ToMimeType(Extension.Replace(".", ""));
+    public string MimeType => MimeTypes.FromExtension(Extension.Replace(".", ""));
 
     [BsonElement("hash")]
     [JsonProperty("hash")]

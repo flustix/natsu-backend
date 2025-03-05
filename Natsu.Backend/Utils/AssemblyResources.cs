@@ -2,20 +2,20 @@
 
 namespace Natsu.Backend.Utils;
 
-public static class ResourceUtils
+public static class AssemblyResources
 {
     private static Assembly assembly { get; }
     private static string prefix { get; }
 
-    static ResourceUtils()
+    static AssemblyResources()
     {
-        assembly = typeof(ResourceUtils).Assembly;
+        assembly = typeof(AssemblyResources).Assembly;
         prefix = assembly.GetName().Name!;
     }
 
-    public static string ReadStringFromAssembly(string file)
+    public static string ReadString(string file)
     {
-        using var stream = ReadStreamFromAssembly(file);
+        using var stream = ReadStream(file);
 
         if (stream is null)
             throw new ArgumentNullException($"File {file} was not found in resources.");
@@ -24,7 +24,7 @@ public static class ResourceUtils
         return reader.ReadToEnd();
     }
 
-    public static Stream? ReadStreamFromAssembly(string name)
+    public static Stream? ReadStream(string name)
     {
         name = "Resources/" + name;
 

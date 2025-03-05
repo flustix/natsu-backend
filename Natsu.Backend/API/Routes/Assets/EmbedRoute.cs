@@ -18,9 +18,9 @@ public class EmbedRoute : AbstractAssetRoute
         string template;
 
         if (mime.StartsWith("image/"))
-            template = ResourceUtils.ReadStringFromAssembly("opengraph-image.html");
+            template = AssemblyResources.ReadString("opengraph-image.html");
         else if (mime.StartsWith("video/"))
-            template = ResourceUtils.ReadStringFromAssembly("opengraph-video.html");
+            template = AssemblyResources.ReadString("opengraph-video.html");
         else
         {
             await interaction.ReplyError(HttpStatusCode.BadRequest, $"Unable to create embed for mime type '{mime}'.");

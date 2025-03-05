@@ -1,8 +1,8 @@
 ﻿namespace Natsu.Backend.Utils;
 
-public static class RandomizeUtils
+public static class Randomize
 {
-    public static string GenerateRandomString(int length, CharacterType characters = CharacterType.Letters)
+    public static string RandomString(int length, CharacterType characters = CharacterType.Letters)
     {
         var chars = getCharacters(characters);
 

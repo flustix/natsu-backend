@@ -16,9 +16,9 @@ public static class PreviewManager
         {
             var mime = file.MimeType;
 
-            if (FileUtils.IsImage(mime))
+            if (MimeTypes.IsImage(mime))
                 return createImagePreview(content);
-            if (FileUtils.IsVideo(mime))
+            if (MimeTypes.IsVideo(mime))
                 return createVideoPreview(content);
         }
         catch (Exception ex)
@@ -104,7 +104,7 @@ public static class PreviewManager
         copy.SaveAsJpeg(ms);
 
         ms.Seek(0, SeekOrigin.Begin);
-        var hash = HashUtils.GetHash(ms);
+        var hash = Hashing.GetHash(ms);
 
         var path = FileManager.GetPathFor(hash);
         var folder = Path.GetDirectoryName(path)!;

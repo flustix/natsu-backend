@@ -18,7 +18,7 @@ public static class FileManager
 
     public static TaggedFile CreateFile(string path, byte[] content, Action<TaggedFile>? applyData = null)
     {
-        var hash = HashUtils.GetHash(content);
+        var hash = Hashing.GetHash(content);
         writeFile(hash, content);
 
         var file = new TaggedFile

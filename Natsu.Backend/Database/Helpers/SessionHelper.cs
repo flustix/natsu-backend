@@ -36,7 +36,7 @@ public class SessionHelper
     public static UserSession? Get(ObjectId id) => sessions.Find(x => x.ID == id).FirstOrDefault();
 
     public static string GenerateToken()
-        => RandomizeUtils.GenerateRandomString(32, CharacterType.AllOfIt);
+        => Randomize.RandomString(32, CharacterType.AllOfIt);
 
     private static bool doesTokenExist(string token) => sessions.Find(s => s.Token == token).FirstOrDefault() != null;
 }

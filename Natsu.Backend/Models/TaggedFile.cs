@@ -16,6 +16,7 @@ public class TaggedFile
     [JsonProperty("owner")]
     public ObjectId Owner { get; set; } = ObjectId.Empty;
 
+    [Searchable("path")]
     [BsonElement("path")]
     [JsonProperty("path")]
     public string FilePath { get; set; } = string.Empty;
@@ -25,6 +26,7 @@ public class TaggedFile
     public string Directory => Path.GetDirectoryName(FilePath)?.Replace('\\', '/') ?? "/";
 
     [BsonIgnore]
+    [Searchable("name")]
     [JsonProperty("name")]
     public string FileName => Path.GetFileName(FilePath);
 
@@ -43,10 +45,12 @@ public class TaggedFile
     [BsonElement("preview-hash")]
     public string PreviewHash { get; set; } = string.Empty;
 
+    [Searchable("desc")]
     [BsonElement("description")]
     [JsonProperty("description")]
     public string Description { get; set; } = string.Empty;
 
+    [Searchable("source")]
     [BsonElement("source")]
     [JsonProperty("source")]
     public string Source { get; set; } = string.Empty;

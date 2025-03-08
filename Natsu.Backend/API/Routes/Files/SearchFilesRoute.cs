@@ -21,34 +21,13 @@ public class SearchFilesRoute : INatsuAPIRoute, INeedsAuthorization
         limit = Math.Clamp(limit, 1, 100);
         offset = Math.Max(offset, 0);
 
-        var search = new SearchFilter(query);
+        var search = new SearchFilter<TaggedFile>(query);
 
-        var all = TaggedFileHelper.OwnedBy(interaction.UserID);
-        all.RemoveAll(x => !search.Match(x));
+        var all = search.Filter(TaggedFileHelper.OwnedBy(interaction.UserID));
         all.Sort((a, b) => a.Created.CompareTo(b.Created));
         all.Reverse();
 
         var files = all.Skip(offset).Take(limit);
         await interaction.Reply(HttpStatusCode.OK, files);
-    }
-
-    private static bool matches(TaggedFile file, string query)
-    {
-        var words = query.Split(' ');
-
-        var match = words.All(w =>
-        {
-            var word = w;
-            var invert = false;
-
-            if (word.StartsWith('!'))
-            {
-                word = word[1..];
-                invert = true;
-            }
-
-            return file.Description.Contains(word) == !invert;
-        });
-        return match;
     }
 }

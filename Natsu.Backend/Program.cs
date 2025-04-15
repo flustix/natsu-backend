@@ -63,7 +63,7 @@ public static class Program
             if (string.IsNullOrWhiteSpace(pass))
                 Logger.Log("No default pass found, using 'admin' as default password.", LoggingTarget.General, LogLevel.Warning);
 
-            var user = UserHelper.Add(name ?? "admin", pass ?? "admin");
+            var user = UserHelper.Add(name ?? "admin", pass ?? "admin", u => u.IsAdmin = true);
 
             Logger.Log("Default user created!");
 
@@ -79,6 +79,18 @@ public static class Program
                 tag.Owner = user.ID;
                 TagHelper.Update(tag);
             }
+        }
+
+        if (UserHelper.Admins.Count == 0)
+        {
+            var first = UserHelper.All.FirstOrDefault();
+
+            if (first is null)
+                throw new Exception("No users found!");
+
+            first.IsAdmin = true;
+            UserHelper.Update(first);
+            Logger.Log($"Set user '{first.Username}' as admin.");
         }
     }
 }

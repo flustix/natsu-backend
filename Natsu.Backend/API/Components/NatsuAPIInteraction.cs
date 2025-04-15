@@ -6,6 +6,7 @@ using Midori.API.Components.Json;
 using Midori.Utils;
 using MongoDB.Bson;
 using Natsu.Backend.Database.Helpers;
+using Natsu.Backend.Models.Users;
 
 namespace Natsu.Backend.API.Components;
 
@@ -16,6 +17,9 @@ public class NatsuAPIInteraction : JsonInteraction<NatsuAPIResponse>, IHasAuthor
     private static readonly string[] extra_methods = { "PATCH" };
 
     public ObjectId UserID { get; private set; } = ObjectId.Empty;
+    public User User => user.Value ?? throw new InvalidOperationException("User not found.");
+
+    private Lazy<User?> user => new(() => UserHelper.Get(UserID));
 
     public bool IsAuthorized => UserID != ObjectId.Empty;
     public string AuthorizationError { get; private set; } = string.Empty;

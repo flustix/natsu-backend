@@ -20,4 +20,8 @@ public class User
     [BsonElement("avatar")]
     [JsonProperty("avatar")]
     public string? AvatarID { get; set; } = "";
+
+    [BsonElement("admin")]
+    [JsonProperty("admin")]
+    public bool IsAdmin { get; set; }
 }

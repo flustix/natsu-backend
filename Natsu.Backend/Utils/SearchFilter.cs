@@ -83,7 +83,6 @@ public partial class SearchFilter<T>
     {
         var param = Expression.Parameter(typeof(T), "x");
         var props = typeof(T).GetProperties().Where(p => p.GetCustomAttribute<SearchableAttribute>() != null)
-                             .Where(p => p.PropertyType == typeof(string))
                              .ToDictionary(x => x.GetCustomAttribute<SearchableAttribute>()!.Key.ToLowerInvariant(), x => x);
 
         if (props.Count == 0)
@@ -94,23 +93,82 @@ public partial class SearchFilter<T>
 
         foreach (var (key, op, val) in groups)
         {
-            if (!props.TryGetValue(key.ToLowerInvariant(), out var info))
+            var split = key.Split(".", StringSplitOptions.RemoveEmptyEntries);
+
+            if (!props.TryGetValue(split[0].ToLowerInvariant(), out var info))
                 return x => false;
 
-            var searchText = val.Trim('*');
-            var method = getStringComparisonMethod(val.StartsWith('*'), val.EndsWith('*'));
+            switch (info.PropertyType.Name)
+            {
+                case nameof(String):
+                {
+                    var searchText = val.Trim('*');
+                    var method = getStringComparisonMethod(val.StartsWith('*'), val.EndsWith('*'));
 
-            var valueExpr = Expression.Constant(searchText);
-            var property = Expression.Property(param, info);
-            Expression condition = Expression.Call(property, method, valueExpr);
+                    var valueExpr = Expression.Constant(searchText);
+                    var property = Expression.Property(param, info);
+                    Expression condition = Expression.Call(property, method, valueExpr);
 
-            if (op == "!=")
-                condition = Expression.Not(condition);
+                    switch (op)
+                    {
+                        case "=":
+                            break;
 
-            finalExpr = finalExpr == null ? condition : Expression.AndAlso(finalExpr, condition);
+                        case "!=":
+                            condition = Expression.Not(condition);
+                            break;
+
+                        default:
+                            throw invalidOp(key, op, info);
+                    }
+
+                    finalExpr = finalExpr == null ? condition : Expression.AndAlso(finalExpr, condition);
+                    break;
+                }
+
+                case "List`1":
+                {
+                    if (split.Length < 2)
+                        throw new InvalidOperationException($"{key}: Missing sub-key for list.");
+
+                    var sub = split[1];
+
+                    switch (sub)
+                    {
+                        case "count":
+                            var parsed = int.Parse(val);
+                            var value = Expression.Constant(parsed);
+                            var property = Expression.Property(Expression.Property(param, info), nameof(List<object>.Count));
+
+                            finalExpr = op switch
+                            {
+                                "=" => Expression.Equal(property, value),
+                                "!=" => Expression.NotEqual(property, value),
+                                ">" => Expression.GreaterThan(property, value),
+                                "<" => Expression.LessThan(property, value),
+                                ">=" => Expression.GreaterThanOrEqual(property, value),
+                                "<=" => Expression.LessThanOrEqual(property, value),
+                                _ => throw invalidOp(key, op, info)
+                            };
+
+                            break;
+
+                        default:
+                            throw new InvalidOperationException($"{key}: Invalid sub-key '{sub}'.");
+                    }
+
+                    break;
+                }
+
+                default:
+                    throw new InvalidOperationException($"Type of '{key}' is an unknown type '{info.PropertyType.Name}'.");
+            }
         }
 
         return finalExpr == null ? x => false : Expression.Lambda<Func<T, bool>>(finalExpr, param);
+
+        Exception invalidOp(string key, string op, PropertyInfo info) =>
+            new InvalidOperationException($"{key}: Operation {op} is not valid on {info.PropertyType.Name}.");
     }
 
     private List<(string, string, string)> groupTokens(List<string> tokens)
@@ -167,7 +225,7 @@ public partial class SearchFilter<T>
 
     private static bool validOp(string token) => token is "=" or "!=" or ">" or "<" or ">=" or "<=";
 
-    [GeneratedRegex("""(?<quoted>"[^"]*")|(?<expression>[=><!]+)|(?<word>\*?\w+\*?)""", RegexOptions.Compiled)]
+    [GeneratedRegex("""(?<quoted>"[^"]*")|(?<expression>[=><!]+)|(?<word>\*?[^*=<>! ]+\*?)""", RegexOptions.Compiled)]
     private static partial Regex tokenRegex();
 
     #endregion

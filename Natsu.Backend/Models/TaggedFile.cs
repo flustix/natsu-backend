@@ -59,6 +59,7 @@ public class TaggedFile
     [JsonProperty("nsfw")]
     public bool NotSafeForWork { get; set; }
 
+    [Searchable("tags")]
     [BsonElement("tags")]
     [JsonProperty("tags")]
     public List<ObjectId> Tags { get; set; } = new();

@@ -21,7 +21,17 @@ public class SearchFilesRoute : INatsuAPIRoute, INeedsAuthorization
         limit = Math.Clamp(limit, 1, 100);
         offset = Math.Max(offset, 0);
 
-        var search = new SearchFilter<TaggedFile>(query);
+        SearchFilter<TaggedFile> search;
+
+        try
+        {
+            search = new SearchFilter<TaggedFile>(query);
+        }
+        catch (Exception ex)
+        {
+            await interaction.ReplyError(HttpStatusCode.BadRequest, ex.Message);
+            return;
+        }
 
         var all = search.Filter(TaggedFileHelper.OwnedBy(interaction.UserID));
         all.Sort((a, b) => a.Created.CompareTo(b.Created));
